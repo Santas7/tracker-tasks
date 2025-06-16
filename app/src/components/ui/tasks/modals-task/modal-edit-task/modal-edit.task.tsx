@@ -1,68 +1,111 @@
-import { Button, Modal, Select, TextInput } from "@mantine/core";
+import { Modal, TextInput, Select, Button } from "@mantine/core";
 
-export const ModalEditTask = (props) => {
-  return  <Modal opened={props.editOpened} onClose={props.closeEdit} title="Редактировать задачу">
-    {props.editTask && (
-      <>
-        <TextInput
-          label="Название"
-          value={props.editTask.title}
-          onChange={(e) => props.setEditTask({ ...props.editTask, title: e.currentTarget.value })}
-          required
-        />
-        <TextInput
-          label="Описание"
-          value={props.editTask.description}
-          onChange={(e) => props.setEditTask({ ...props.editTask, description: e.currentTarget.value })}
-          mt="md"
-        />
-        <TextInput
-          label="Навыки"
-          value={props.editTask.skills ? props.editTask.skills.join(', ') : ''}
-          onChange={(e) => props.setEditTask({ ...props.editTask, skills: e.currentTarget.value.split(',').map(s => s.trim()) })}
-          mt="md"
-          placeholder="Введите навыки через запятую"
-        />
-        <TextInput
-          label="ID группы"
-          value={props.editTask.group_id}
-          onChange={(e) => props.setEditTask({ ...props.editTask, group_id: parseInt(e.currentTarget.value) })}
-          mt="md"
-          type="number"
-        />
-        <TextInput
-          label="Дата начала"
-          value={props.editTask.dt_start}
-          onChange={(e) => props.setEditTask({ ...props.editTask, dt_start: e.currentTarget.value })}
-          mt="md"
-          type="datetime-local"
-        />
-        <TextInput
-          label="Дата окончания"
-          value={props.editTask.dt_end}
-          onChange={(e) => props.setEditTask({ ...props.editTask, dt_end: e.currentTarget.value })}
-          mt="md"
-          type="datetime-local"
-        />
-        <Select
-          label="Приоритет"
-          value={props.editTask.priority}
-          onChange={(value) => props.setEditTask({ ...props.editTask, priority: value || '' })}
-          data={props.priorityOptions}
-          mt="md"
-        />
-        <Select
-          label="Статус"
-          value={props.editTask.status}
-          onChange={(value) => props.setEditTask({ ...props.editTask, status: value || props.editTask.status })}
-          data={props.statusOptions}
-          mt="md"
-          required
-        />
-        <Button onClick={props.handleEditTask} mt="md" fullWidth>
-          Сохранить
-        </Button>
-      </>
-    )}
-  </Modal>
+export const ModalEditTask = ({
+  editOpened,
+  closeEdit,
+  editTask,
+  setEditTask,
+  handleEditTask,
+  priorityOptions,
+  statusOptions,
+}) => {
+  return (
+    <Modal opened={editOpened} onClose={closeEdit} title="Редактировать задачу">
+      {editTask && (
+        <>
+          <TextInput
+            label="Название"
+            value={editTask.title}
+            onChange={(e) =>
+              setEditTask({ ...editTask, title: e.currentTarget.value })
+            }
+            required
+          />
+          <TextInput
+            label="Описание"
+            value={editTask.description}
+            onChange={(e) =>
+              setEditTask({ ...editTask, description: e.currentTarget.value })
+            }
+            mt="md"
+          />
+          <TextInput
+            label="Навыки"
+            value={editTask.skills ? editTask.skills.join(", ") : ""}
+            onChange={(e) =>
+              setEditTask({
+                ...editTask,
+                skills: e.currentTarget.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter((s) => s),
+              })
+            }
+            mt="md"
+            placeholder="Введите навыки через запятую"
+          />
+          <TextInput
+            label="ID группы"
+            value={editTask.group_id || ""}
+            onChange={(e) =>
+              setEditTask({
+                ...editTask,
+                group_id: e.currentTarget.value
+                  ? parseInt(e.currentTarget.value)
+                  : null,
+              })
+            }
+            mt="md"
+            type="number"
+          />
+          <TextInput
+            label="Дата начала"
+            value={editTask.dt_start || ""}
+            onChange={(e) =>
+              setEditTask({
+                ...editTask,
+                dt_start: e.currentTarget.value || null,
+              })
+            }
+            mt="md"
+            type="datetime-local"
+          />
+          <TextInput
+            label="Дата окончания"
+            value={editTask.dt_end || ""}
+            onChange={(e) =>
+              setEditTask({
+                ...editTask,
+                dt_end: e.currentTarget.value || null,
+              })
+            }
+            mt="md"
+            type="datetime-local"
+          />
+          <Select
+            label="Приоритет"
+            value={editTask.priority || "low"}
+            onChange={(value) =>
+              setEditTask({ ...editTask, priority: value || "low" })
+            }
+            data={priorityOptions}
+            mt="md"
+          />
+          <Select
+            label="Статус"
+            value={editTask.status || "new"}
+            onChange={(value) =>
+              setEditTask({ ...editTask, status: value || "new" })
+            }
+            data={statusOptions}
+            mt="md"
+            required
+          />
+          <Button onClick={handleEditTask} mt="md" fullWidth>
+            Сохранить
+          </Button>
+        </>
+      )}
+    </Modal>
+  );
 };
