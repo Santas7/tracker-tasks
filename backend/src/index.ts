@@ -156,15 +156,19 @@ app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
 
 app.put('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
-  const validPriorities = ['Низкий', 'Средний', 'Высокий'];
-  const validStatuses = ['Новая', 'В работе', 'Завершена'];
-  if (!validPriorities.includes(priority)) {
-    return res.status(400).json({ message: 'Invalid priority value' });
+  let { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
+  const m = {
+    'Низкий': 'low',
+    'Средний': 'medium',
+    'Высокий': 'high'
   }
-  if (!validStatuses.includes(status)) {
-    return res.status(400).json({ message: 'Invalid status value' });
+  const s = {
+    'Новая': 'new',
+    'В работе': 'in_progress',
+    'Завершена': 'completed'
   }
+  priority = m[priority];
+  status = s[status];
   try {
     const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : null;
     const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
@@ -185,11 +189,15 @@ app.put('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) =
 
 app.put('/api/tasks/:id/status', authenticateJWT, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status } = req.body;
-  const validStatuses = ['Новая', 'В работе', 'Завершена'];
-  if (!validStatuses.includes(status)) {
-    return res.status(400).json({ message: 'Invalid status value' });
+  let { status } = req.body;
+  
+  const s = {
+    'Новая': 'new',
+    'В работе': 'in_progress',
+    'Завершена': 'completed'
   }
+  
+  status = s[status];
   try {
     const result = await pool.query(
       'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *',

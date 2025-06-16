@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IconLogout } from '@tabler/icons-react';
+import { IconApple, IconLogout } from '@tabler/icons-react';
 import { Code, Group } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import { NavLink, useLocation } from 'react-router';
@@ -42,8 +42,9 @@ export const Sidebar = () => {
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
         <Group className={classes.header} justify="space-between">
-          <MantineLogo size={28} />
-          <Code fw={700}>v1.0</Code>
+          {/* <MantineLogo size={28} /> */}
+          <IconApple className={classes.linkIcon} stroke={1.5} />
+          <Code fw={700}>v0.1</Code>
         </Group>
         
         {links}
