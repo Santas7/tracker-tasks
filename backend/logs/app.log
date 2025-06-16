@@ -1,3 +1,14 @@
 {"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T07:41:00.696Z"}
 {"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T07:41:31.658Z"}
 {"level":"info","message":"Fetched all users","timestamp":"2025-06-16T07:42:13.910Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T08:54:43.961Z"}
+{"level":"error","message":"Error connecting to database: role \"andrey\" does not exist","timestamp":"2025-06-16T08:54:44.102Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T08:59:56.797Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T08:59:56.820Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T09:05:41.978Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T09:05:42.030Z"}
+{"level":"info","message":"User registered: andrei","timestamp":"2025-06-16T09:06:10.288Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T09:06:25.835Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T09:11:50.234Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T09:11:50.263Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T09:13:34.363Z"}
