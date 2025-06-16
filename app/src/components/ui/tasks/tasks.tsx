@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Title, Card, Text, Button, Modal, TextInput, Select, Group, Grid, ActionIcon, Notification } from '@mantine/core';
+import { Title, Button, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconPencil, IconTrash } from '@tabler/icons-react';
 import api from '../../../core/api/api';
 import { ModalCreateTask } from './modals-task/modal-create-task/modal-create-task';
 import { ModalEditTask } from './modals-task/modal-edit-task/modal-edit.task';
@@ -14,10 +13,10 @@ interface Task {
   description: string;
   skills: string[] | null;
   group_id: number;
-  dt_start: string;
-  dt_end: string;
-  priority: string;
-  status: string;
+  dt_start: string | null;
+  dt_end: string | null;
+  priority: string | null;
+  status: string | null;
 }
 
 export const Tasks = () => {
@@ -32,7 +31,7 @@ export const Tasks = () => {
     group_id: '',
     dt_start: '',
     dt_end: '',
-    priority: '',
+    priority: 'low',
     status: 'new'
   });
   const [editTask, setEditTask] = useState<Task | null>(null);
@@ -42,12 +41,6 @@ export const Tasks = () => {
     { value: 'in_progress', label: 'В работе' },
     { value: 'completed', label: 'Завершена' },
   ];
-
-  const columns = {
-    'Новая': tasks.filter(t => t.status === 'new'),
-    'В работе': tasks.filter(t => t.status === 'in_progress'),
-    'Завершена': tasks.filter(t => t.status === 'completed'),
-  };
 
   const priorityOptions = [
     { value: 'low', label: 'Низкий' },
@@ -71,8 +64,10 @@ export const Tasks = () => {
     try {
       const response = await api.post('/tasks', {
         ...newTask,
-        group_id: parseInt(newTask.group_id),
-        skills: newTask.skills ? newTask.skills.split(',').map(s => s.trim()) : null,
+        group_id: newTask.group_id ? parseInt(newTask.group_id) : null,
+        skills: newTask.skills ? newTask.skills.split(',').map(s => s.trim()).filter(s => s) : null,
+        dt_start: newTask.dt_start || null,
+        dt_end: newTask.dt_end || null,
       });
       setTasks([...tasks, response.data]);
       close();
@@ -83,7 +78,7 @@ export const Tasks = () => {
         group_id: '',
         dt_start: '',
         dt_end: '',
-        priority: '',
+        priority: 'low',
         status: 'new'
       });
     } catch (err: any) {
@@ -96,8 +91,10 @@ export const Tasks = () => {
     try {
       const response = await api.put(`/tasks/${editTask.id}`, {
         ...editTask,
-        group_id: parseInt(String(editTask.group_id)),
-        skills: editTask.skills ? editTask.skills.join(',') : null,
+        group_id: editTask.group_id ? parseInt(String(editTask.group_id)) : null,
+        skills: editTask.skills ? editTask.skills : null,
+        dt_start: editTask.dt_start || null,
+        dt_end: editTask.dt_end || null,
       });
       setTasks(tasks.map(t => t.id === editTask.id ? response.data : t));
       closeEdit();
@@ -125,7 +122,11 @@ export const Tasks = () => {
     }
   };
 
-  
+  const columns = {
+    'Новая': tasks.filter(t => !t.status || t.status === 'new'),
+    'В работе': tasks.filter(t => t.status === 'in_progress'),
+    'Завершена': tasks.filter(t => t.status === 'completed'),
+  };
 
   return (
     <div>
@@ -137,16 +138,17 @@ export const Tasks = () => {
       )}
       <Button onClick={open} mt="md">Создать задачу</Button>
       
-      <PlotTasks columns={columns} 
-        statusOptions={statusOptions} 
-        priorityOptions={priorityOptions} 
-        handleStatusChange={handleStatusChange} 
-        handleDeleteTask={handleDeleteTask} 
-        openEdit={openEdit} 
-        editTask={editTask} 
-        setEditTask={setEditTask} 
+      <PlotTasks
+        columns={columns}
+        statusOptions={statusOptions}
+        priorityOptions={priorityOptions}
+        handleStatusChange={handleStatusChange}
+        handleDeleteTask={handleDeleteTask}
+        openEdit={openEdit}
+        setEditTask={setEditTask}
       />
-      <ModalsTask opened={opened}
+      <ModalsTask
+        opened={opened}
         close={close}
         newTask={newTask}
         setNewTask={setNewTask}
@@ -156,6 +158,8 @@ export const Tasks = () => {
         editTask={editTask}
         setEditTask={setEditTask}
         handleEditTask={handleEditTask}
+        priorityOptions={priorityOptions}
+        statusOptions={statusOptions}
       />
     </div>
   );

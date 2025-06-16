@@ -11,9 +11,10 @@ export const ModalsTask = ({
   closeEdit,  
   editTask,
   setEditTask,
-  handleEditTask
-  
+  handleEditTask,
+  priorityOptions
 }) => {
+  console.log(priorityOptions)
   return <>
     <ModalCreateTask 
       opened={opened} 
@@ -28,5 +29,6 @@ export const ModalsTask = ({
       editTask={editTask} 
       setEditTask={setEditTask} 
       handleEditTask={handleEditTask} 
+      priorityOptions={priorityOptions}
     /></>
 };
