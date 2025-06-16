@@ -20,7 +20,7 @@ export const SignUp = () => {
 
     try {
       await api.post('/register', { username, email, password });
-      navigate('/'); // Redirect to sign-in page
+      navigate('/'); 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Ошибка при регистрации');
     }

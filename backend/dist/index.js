@@ -10,7 +10,12 @@ const logger_1 = require("./core/logger/logger");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_session_1 = __importDefault(require("express-session"));
 const db_1 = require("./core/db/db");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)({
+    origin: '*',
+    credentials: true,
+}));
 app.use(express_1.default.json());
 app.use((0, express_session_1.default)({
     store: new db_1.PgSession({
