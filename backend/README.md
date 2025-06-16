@@ -39,6 +39,17 @@
 
 _(postgres)_
 
+Проверка версии Постгреса
+```sql
+psql --version
+```
+psql (PostgreSQL) 14.17 (Homebrew)
+
+Подключение к постгресу.
+```
+psql -U postgres
+```
+
 Создание базы данных + подключение
 ```sql
 CREATE DATABASE task_tracker
@@ -141,4 +152,18 @@ CREATE TRIGGER update_tasks_timestamp
     BEFORE UPDATE ON tasks
     FOR EACH ROW
     EXECUTE FUNCTION update_timestamp();
+```
+```
+task_tracker=# \dt
+           List of relations
+ Schema |    Name     | Type  | Owner  
+--------+-------------+-------+--------
+ public | group_users | table | andrey
+ public | groups      | table | andrey
+ public | task_users  | table | andrey
+ public | tasks       | table | andrey
+ public | users       | table | andrey
+(5 rows)
+
+task_tracker=# 
 ```
