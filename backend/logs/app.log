@@ -12,3 +12,56 @@
 {"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T09:11:50.234Z"}
 {"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T09:11:50.263Z"}
 {"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T09:13:34.363Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T09:28:36.724Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T09:28:36.764Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T09:54:03.802Z"}
+{"level":"error","message":"Error connecting to database: ","timestamp":"2025-06-16T09:54:03.886Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T10:52:17.317Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T10:52:17.478Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:00:58.077Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:13:37.327Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:13:37.386Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:13:37.878Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:13:38.483Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:13:38.485Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:13:41.207Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:13:42.140Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:13:42.698Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:13:43.103Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T11:16:51.803Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T11:16:51.829Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:16:55.048Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:16:55.058Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:16:56.047Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:16:56.509Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:17:38.249Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:17:47.257Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:17:52.208Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:17:55.206Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:18:05.219Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:18:08.204Z"}
+{"level":"error","message":"Error creating group: column \"user_id\" of relation \"groups\" does not exist","timestamp":"2025-06-16T11:18:16.249Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:22:25.223Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:22:28.205Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T11:23:13.279Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T11:23:13.302Z"}
+{"level":"info","message":"Group created by user: andrei","timestamp":"2025-06-16T11:23:21.408Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:23:23.768Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:23:23.778Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:23:28.802Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:23:29.217Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:23:33.359Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:23:33.360Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:23:37.160Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:23:40.574Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:23:41.093Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:23:41.094Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:26:59.245Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T11:27:11.263Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T11:27:11.290Z"}
+{"level":"info","message":"Group 1 deleted by user: andrei","timestamp":"2025-06-16T11:27:15.011Z"}
+{"level":"info","message":"Group created by user: andrei","timestamp":"2025-06-16T11:27:20.849Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:27:25.487Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:27:25.499Z"}
+{"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:27:29.431Z"}
+{"level":"error","message":"Error creating task: malformed array literal: \"\"","timestamp":"2025-06-16T11:27:57.864Z"}

@@ -152,6 +152,62 @@ app.get('/api/groups', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+app.post('/api/groups', authenticateJWT, async (req, res) => {
+    const { name, description } = req.body;
+    try {
+        const result = await db_config_1.pool.query('INSERT INTO groups (name, description, admin_user_id) VALUES ($1, $2, $3) RETURNING *', [name, description, req.user?.id]);
+        const group = result.rows[0];
+        await db_config_1.pool.query('INSERT INTO group_users (group_id, user_id) VALUES ($1, $2)', [group.id, req.user?.id]);
+        logger_1.logger.info(`Group created by user: ${req.user?.username}`);
+        res.status(201).json(group);
+    }
+    catch (err) {
+        logger_1.logger.error(`Error creating group: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+});
+app.patch('/api/groups/:id', authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    try {
+        const check = await db_config_1.pool.query('SELECT admin_user_id FROM groups WHERE id = $1', [id]);
+        if (check.rows.length === 0) {
+            return res.status(404).json({ message: 'Group not found' });
+        }
+        if (check.rows[0].admin_user_id !== req.user?.id) {
+            return res.status(403).json({ message: 'Not authorized to edit this group' });
+        }
+        const result = await db_config_1.pool.query('UPDATE groups SET name = $1, description = $2 WHERE id = $3 RETURNING *', [name, description, id]);
+        logger_1.logger.info(`Group ${id} updated by user: ${req.user?.username}`);
+        res.json(result.rows[0]);
+    }
+    catch (err) {
+        logger_1.logger.error(`Error updating group: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+});
+app.delete('/api/groups/:id', authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const check = await db_config_1.pool.query('SELECT admin_user_id FROM groups WHERE id = $1', [id]);
+        if (check.rows.length === 0) {
+            return res.status(404).json({ message: 'Group not found' });
+        }
+        if (check.rows[0].admin_user_id !== req.user?.id) {
+            return res.status(403).json({ message: 'Not authorized to delete this group' });
+        }
+        await db_config_1.pool.query('DELETE FROM group_users WHERE group_id = $1', [id]);
+        await db_config_1.pool.query('DELETE FROM task_users WHERE task_id IN (SELECT id FROM tasks WHERE group_id = $1)', [id]);
+        await db_config_1.pool.query('DELETE FROM tasks WHERE group_id = $1', [id]);
+        await db_config_1.pool.query('DELETE FROM groups WHERE id = $1', [id]);
+        logger_1.logger.info(`Group ${id} deleted by user: ${req.user?.username}`);
+        res.status(204).send();
+    }
+    catch (err) {
+        logger_1.logger.error(`Error deleting group: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+});
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(config_1.config.server.port, () => {
     logger_1.logger.info(`Server running on port ${config_1.config.server.port}`);

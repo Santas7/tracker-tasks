@@ -8,6 +8,7 @@ import { Route, Routes } from 'react-router';
 import { Tasks } from './components/ui/tasks/tasks';
 import { Groups } from './components/ui/groups/groups';
 import { Profile } from './components/ui/profile/profile';
+import { Main } from './components/ui/main/main';
 
 export const App = () => (
   <Routes>
@@ -17,7 +18,7 @@ export const App = () => (
       <Route path="/dashboard" element={<Dashboard />}>
         <Route path="tasks" element={<Tasks />} />
         <Route path="groups" element={<Groups />} />
-        {/* <Route path="users" element={<Users />} /> */}
+        <Route path="main" element={<Main />} />
         <Route path="profile" element={<Profile />} />
         <Route index element={<Tasks />} />
       </Route>
