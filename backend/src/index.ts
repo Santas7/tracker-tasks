@@ -12,12 +12,11 @@ import cors from 'cors';
 const app: Express = express();
 
 app.use(cors({
-  origin: '*', 
+  origin: 'http://localhost:5173', 
   credentials: true, 
 }));
 
 app.use(express.json());
-
 
 app.use(session({
   store: new PgSession({
@@ -96,18 +95,90 @@ app.get('/api/profile', authenticateJWT, async (req: Request, res: Response) => 
   }
 });
 
-app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
-  const { title, description, skills, group_id, dt_start, dt_end, priority } = req.body;
+app.get('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
+  const { user_id, group_id } = req.query;
   try {
+    let query = 'SELECT * FROM tasks';
+    const params: any[] = [];
+    if (user_id || group_id) {
+      query += ' WHERE';
+      if (user_id) {
+        query += ' EXISTS (SELECT 1 FROM task_users WHERE task_id = tasks.id AND user_id = $1)';
+        params.push(user_id);
+      }
+      if (group_id) {
+        query += user_id ? ' AND group_id = $2' : ' group_id = $1';
+        params.push(group_id);
+      }
+    }
+    const result = await pool.query(query, params);
+    logger.info(`Fetched tasks for user_id: ${user_id || 'all'}`);
+    res.json(result.rows);
+  } catch (err: any) {
+    logger.error(`Error fetching tasks: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
+  let { title, description, skills, group_id, dt_start, dt_end, priority, status, user_ids } = req.body;
+  const m = {
+    'Низкий': 'low',
+    'Средний': 'medium',
+    'Высокий': 'high'
+  }
+  const s = {
+    'Новая': 'new',
+    'В работе': 'in_progress',
+    'Завершена': 'completed'
+  }
+  priority = m[priority];
+  status = s[status];
+  try {
+    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : null;
+    const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
     const result = await pool.query(
-      'INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [title, description, skills, group_id, dt_start, dt_end, priority]
+      'INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status]
     );
-    //@ts-ignore
+    const task = result.rows[0];
+    const userIds = Array.isArray(user_ids) ? user_ids : [req.user?.id];
+    for (const user_id of userIds) {
+      await pool.query('INSERT INTO task_users (task_id, user_id) VALUES ($1, $2)', [task.id, user_id]);
+    }
     logger.info(`Task created by user: ${req.user?.username}`);
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(task);
   } catch (err: any) {
     logger.error(`Error creating task: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.put('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
+  const validPriorities = ['Низкий', 'Средний', 'Высокий'];
+  const validStatuses = ['Новая', 'В работе', 'Завершена'];
+  if (!validPriorities.includes(priority)) {
+    return res.status(400).json({ message: 'Invalid priority value' });
+  }
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
+  try {
+    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : null;
+    const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
+    const result = await pool.query(
+      'UPDATE tasks SET title = $1, description = $2, skills = $3, group_id = $4, dt_start = $5, dt_end = $6, priority = $7, status = $8 WHERE id = $9 RETURNING *',
+      [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    logger.info(`Task ${id} updated by user: ${req.user?.username}`);
+    res.json(result.rows[0]);
+  } catch (err: any) {
+    logger.error(`Error updating task: ${err.message}`);
     res.status(500).send('Server error');
   }
 });
@@ -115,31 +186,38 @@ app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
 app.put('/api/tasks/:id/status', authenticateJWT, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
+  const validStatuses = ['Новая', 'В работе', 'Завершена'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
   try {
     const result = await pool.query(
       'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *',
       [status, id]
     );
-    if (result.rows.length > 0) {
-      //@ts-ignore
-      logger.info(`Task ${id} status updated by user: ${req.user?.username}`);
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).json({ message: 'Task not found' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
     }
+    logger.info(`Task ${id} status updated to ${status}`);
+    res.json(result.rows[0]);
   } catch (err: any) {
     logger.error(`Error updating task status: ${err.message}`);
     res.status(500).send('Server error');
   }
 });
 
-app.get('/api/tasks', async (req: Request, res: Response) => {
+app.delete('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM tasks');
-    logger.info('Fetched all tasks');
-    res.json(result.rows);
+    await pool.query('DELETE FROM task_users WHERE task_id = $1', [id]);
+    const result = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    logger.info(`Task ${id} deleted by user: ${req.user?.username}`);
+    res.status(204).send();
   } catch (err: any) {
-    logger.error(`Error fetching tasks: ${err.message}`);
+    logger.error(`Error deleting task: ${err.message}`);
     res.status(500).send('Server error');
   }
 });
@@ -166,7 +244,67 @@ app.get('/api/groups', async (req: Request, res: Response) => {
   }
 });
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.post('/api/groups', authenticateJWT, async (req: Request, res: Response) => {
+  const { name, description } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO groups (name, description, admin_user_id) VALUES ($1, $2, $3) RETURNING *',
+      [name, description, req.user?.id]
+    );
+    const group = result.rows[0];
+    await pool.query('INSERT INTO group_users (group_id, user_id) VALUES ($1, $2)', [group.id, req.user?.id]);
+    logger.info(`Group created by user: ${req.user?.username}`);
+    res.status(201).json(group);
+  } catch (err: any) {
+    logger.error(`Error creating group: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.patch('/api/groups/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+  try {
+    const check = await pool.query('SELECT admin_user_id FROM groups WHERE id = $1', [id]);
+    if (check.rows.length === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+    if (check.rows[0].admin_user_id !== req.user?.id) {
+      return res.status(403).json({ message: 'Not authorized to edit this group' });
+    }
+    const result = await pool.query(
+      'UPDATE groups SET name = $1, description = $2 WHERE id = $3 RETURNING *',
+      [name, description, id]
+    );
+    logger.info(`Group ${id} updated by user: ${req.user?.username}`);
+    res.json(result.rows[0]);
+  } catch (err: any) {
+    logger.error(`Error updating group: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/api/groups/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const check = await pool.query('SELECT admin_user_id FROM groups WHERE id = $1', [id]);
+    if (check.rows.length === 0) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+    if (check.rows[0].admin_user_id !== req.user?.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this group' });
+    }
+    await pool.query('DELETE FROM group_users WHERE group_id = $1', [id]);
+    await pool.query('DELETE FROM task_users WHERE task_id IN (SELECT id FROM tasks WHERE group_id = $1)', [id]);
+    await pool.query('DELETE FROM tasks WHERE group_id = $1', [id]);
+    await pool.query('DELETE FROM groups WHERE id = $1', [id]);
+    logger.info(`Group ${id} deleted by user: ${req.user?.username}`);
+    res.status(204).send();
+  } catch (err: any) {
+    logger.error(`Error deleting group: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
 
 app.listen(config.server.port, () => {
   logger.info(`Server running on port ${config.server.port}`);
