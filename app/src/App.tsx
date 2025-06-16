@@ -1,5 +1,6 @@
+import { Button } from '@mantine/core'
 import './App.css'
 
 export const App = () => {
-  return <div>Hello</div>
+  return <Button variant="filled">Button</Button>
 }
