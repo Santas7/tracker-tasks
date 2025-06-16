@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react';
 import { Code, Group } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
-import classes from './NavbarSimple.module.css';
+import classes from './dashboard.module.css';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../core/store/hooks';
 import { logout } from '../../core/store/slices/auth-slice';
