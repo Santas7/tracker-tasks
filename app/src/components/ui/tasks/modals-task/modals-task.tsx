@@ -8,27 +8,30 @@ export const ModalsTask = ({
   setNewTask,
   handleCreateTask,
   editOpened,
-  closeEdit,  
+  closeEdit,
   editTask,
   setEditTask,
   handleEditTask,
-  priorityOptions
+  priorityOptions,
 }) => {
-  console.log(priorityOptions)
-  return <>
-    <ModalCreateTask 
-      opened={opened} 
-      close={close} 
-      newTask={newTask} 
-      setNewTask={setNewTask} 
-      handleCreateTask={handleCreateTask} 
-    />
-    <ModalEditTask 
-      editOpened={editOpened} 
-      closeEdit={closeEdit} 
-      editTask={editTask} 
-      setEditTask={setEditTask} 
-      handleEditTask={handleEditTask} 
-      priorityOptions={priorityOptions}
-    /></>
+  console.log(priorityOptions);
+  return (
+    <>
+      <ModalCreateTask
+        opened={opened}
+        close={close}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        handleCreateTask={handleCreateTask}
+      />
+      <ModalEditTask
+        editOpened={editOpened}
+        closeEdit={closeEdit}
+        editTask={editTask}
+        setEditTask={setEditTask}
+        handleEditTask={handleEditTask}
+        priorityOptions={priorityOptions}
+      />
+    </>
+  );
 };

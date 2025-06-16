@@ -1,16 +1,15 @@
-import axios from 'axios';
-import { config } from '../config/config';
+import axios from "axios";
+import { config } from "../config/config";
 
 const api = axios.create({
-  baseURL: config.baseURL, 
+  baseURL: config.baseURL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,9 +19,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API error:', error.response?.status, error.response?.data);
+    console.error("API error:", error.response?.status, error.response?.data);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

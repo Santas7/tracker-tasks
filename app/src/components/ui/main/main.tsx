@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Title, Text, Notification, Paper, SimpleGrid } from '@mantine/core';
-import { DonutChart } from '@mantine/charts';
-import api from '../../../core/api/api';
-import { useAppSelector } from '../../../core/store/hooks';
+import { useState, useEffect } from "react";
+import { Title, Text, Notification, Paper, SimpleGrid } from "@mantine/core";
+import { DonutChart } from "@mantine/charts";
+import api from "../../../core/api/api";
+import { useAppSelector } from "../../../core/store/hooks";
 
 interface Stats {
   tasksCount: number;
@@ -19,15 +19,17 @@ export const Main = () => {
     const fetchStats = async () => {
       try {
         const [tasksResponse, groupsResponse] = await Promise.all([
-          api.get('/tasks'),
-          api.get('/groups'),
+          api.get("/tasks"),
+          api.get("/groups"),
         ]);
         setStats({
           tasksCount: tasksResponse.data.length,
           groupsCount: groupsResponse.data.length,
         });
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Не удалось загрузить статистику');
+      } catch (err: { response: { data: { message: string } } }) {
+        setError(
+          err.response?.data?.message || "Не удалось загрузить статистику",
+        );
       }
     };
     fetchStats();
@@ -40,7 +42,8 @@ export const Main = () => {
     <div>
       <Title order={2}>Главная</Title>
       <Text mt="sm">
-        Добро пожаловать, {user?.username}! Сегодня: {currentTime.toLocaleString('ru-RU')}
+        Добро пожаловать, {user?.username}! Сегодня:{" "}
+        {currentTime.toLocaleString("ru-RU")}
       </Text>
       {error && (
         <Notification color="red" title="Ошибка" onClose={() => setError(null)}>
@@ -51,8 +54,8 @@ export const Main = () => {
         <Paper withBorder p="md">
           <DonutChart
             data={[
-              { name: 'Задачи', value: stats.tasksCount, color: 'blue' },
-              { name: 'Группы', value: stats.groupsCount, color: 'teal' },
+              { name: "Задачи", value: stats.tasksCount, color: "blue" },
+              { name: "Группы", value: stats.groupsCount, color: "teal" },
             ]}
             chartLabel="Статистика"
           />
@@ -60,8 +63,8 @@ export const Main = () => {
         <Paper withBorder p="md">
           <DonutChart
             data={[
-              { name: 'Задачи', value: stats.tasksCount, color: 'blue' },
-              { name: 'Группы', value: stats.groupsCount, color: 'teal' },
+              { name: "Задачи", value: stats.tasksCount, color: "blue" },
+              { name: "Группы", value: stats.groupsCount, color: "teal" },
             ]}
             chartLabel="Статистика"
           />

@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Title, Button, Notification } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import api from '../../../core/api/api';
-import { ModalCreateTask } from './modals-task/modal-create-task/modal-create-task';
-import { ModalEditTask } from './modals-task/modal-edit-task/modal-edit.task';
-import { PlotTasks } from './plot-tasks/plot-tasks';
-import { ModalsTask } from './modals-task/modals-task';
+import { useState, useEffect } from "react";
+import { Title, Button, Notification } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import api from "../../../core/api/api";
+import { PlotTasks } from "./plot-tasks/plot-tasks";
+import { ModalsTask } from "./modals-task/modals-task";
 
 interface Task {
   id: number;
@@ -23,38 +21,39 @@ export const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
-  const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
+  const [editOpened, { open: openEdit, close: closeEdit }] =
+    useDisclosure(false);
   const [newTask, setNewTask] = useState({
-    title: '',
-    description: '',
-    skills: '',
-    group_id: '',
-    dt_start: '',
-    dt_end: '',
-    priority: 'low',
-    status: 'new'
+    title: "",
+    description: "",
+    skills: "",
+    group_id: "",
+    dt_start: "",
+    dt_end: "",
+    priority: "low",
+    status: "new",
   });
   const [editTask, setEditTask] = useState<Task | null>(null);
 
   const statusOptions = [
-    { value: 'new', label: 'Новая' },
-    { value: 'in_progress', label: 'В работе' },
-    { value: 'completed', label: 'Завершена' },
+    { value: "new", label: "Новая" },
+    { value: "in_progress", label: "В работе" },
+    { value: "completed", label: "Завершена" },
   ];
 
   const priorityOptions = [
-    { value: 'low', label: 'Низкий' },
-    { value: 'medium', label: 'Средний' },
-    { value: 'high', label: 'Высокий' },
+    { value: "low", label: "Низкий" },
+    { value: "medium", label: "Средний" },
+    { value: "high", label: "Высокий" },
   ];
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await api.get('/tasks');
+        const response = await api.get("/tasks");
         setTasks(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Не удалось загрузить задачи');
+      } catch (err: { response: { data: { message: string } } }) {
+        setError(err.response?.data?.message || "Не удалось загрузить задачи");
       }
     };
     fetchTasks();
@@ -62,27 +61,32 @@ export const Tasks = () => {
 
   const handleCreateTask = async () => {
     try {
-      const response = await api.post('/tasks', {
+      const response = await api.post("/tasks", {
         ...newTask,
         group_id: newTask.group_id ? parseInt(newTask.group_id) : null,
-        skills: newTask.skills ? newTask.skills.split(',').map(s => s.trim()).filter(s => s) : null,
+        skills: newTask.skills
+          ? newTask.skills
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s)
+          : null,
         dt_start: newTask.dt_start || null,
         dt_end: newTask.dt_end || null,
       });
       setTasks([...tasks, response.data]);
       close();
       setNewTask({
-        title: '',
-        description: '',
-        skills: '',
-        group_id: '',
-        dt_start: '',
-        dt_end: '',
-        priority: 'low',
-        status: 'new'
+        title: "",
+        description: "",
+        skills: "",
+        group_id: "",
+        dt_start: "",
+        dt_end: "",
+        priority: "low",
+        status: "new",
       });
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось создать задачу');
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось создать задачу");
     }
   };
 
@@ -91,41 +95,45 @@ export const Tasks = () => {
     try {
       const response = await api.put(`/tasks/${editTask.id}`, {
         ...editTask,
-        group_id: editTask.group_id ? parseInt(String(editTask.group_id)) : null,
+        group_id: editTask.group_id
+          ? parseInt(String(editTask.group_id))
+          : null,
         skills: editTask.skills ? editTask.skills : null,
         dt_start: editTask.dt_start || null,
         dt_end: editTask.dt_end || null,
       });
-      setTasks(tasks.map(t => t.id === editTask.id ? response.data : t));
+      setTasks(tasks.map((t) => (t.id === editTask.id ? response.data : t)));
       closeEdit();
       setEditTask(null);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось обновить задачу');
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось обновить задачу");
     }
   };
 
   const handleStatusChange = async (taskId: number, newStatus: string) => {
     try {
-      const response = await api.put(`/tasks/${taskId}/status`, { status: newStatus });
-      setTasks(tasks.map(t => t.id === taskId ? response.data : t));
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось обновить статус');
+      const response = await api.put(`/tasks/${taskId}/status`, {
+        status: newStatus,
+      });
+      setTasks(tasks.map((t) => (t.id === taskId ? response.data : t)));
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось обновить статус");
     }
   };
 
   const handleDeleteTask = async (taskId: number) => {
     try {
       await api.delete(`/tasks/${taskId}`);
-      setTasks(tasks.filter(t => t.id !== taskId));
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось удалить задачу');
+      setTasks(tasks.filter((t) => t.id !== taskId));
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось удалить задачу");
     }
   };
 
   const columns = {
-    'Новая': tasks.filter(t => !t.status || t.status === 'new'),
-    'В работе': tasks.filter(t => t.status === 'in_progress'),
-    'Завершена': tasks.filter(t => t.status === 'completed'),
+    Новая: tasks.filter((t) => !t.status || t.status === "new"),
+    "В работе": tasks.filter((t) => t.status === "in_progress"),
+    Завершена: tasks.filter((t) => t.status === "completed"),
   };
 
   return (
@@ -136,8 +144,10 @@ export const Tasks = () => {
           {error}
         </Notification>
       )}
-      <Button onClick={open} mt="md">Создать задачу</Button>
-      
+      <Button onClick={open} mt="md">
+        Создать задачу
+      </Button>
+
       <PlotTasks
         columns={columns}
         statusOptions={statusOptions}
