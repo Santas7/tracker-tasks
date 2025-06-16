@@ -12,5 +12,8 @@ export const config = {
     log: {
       level: 'info',
       file: 'logs/app.log'
+    },
+    jwt: {
+      secret: '12345'
     }
   };
