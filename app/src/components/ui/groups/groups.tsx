@@ -1,8 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Title, Table, Notification, Button, Modal, TextInput, Textarea, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import api from '../../../core/api/api';
-import { useAppSelector } from '../../../core/store/hooks';
+import { useState, useEffect } from "react";
+import {
+  Title,
+  Table,
+  Notification,
+  Button,
+  Modal,
+  TextInput,
+  Textarea,
+  Text,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import api from "../../../core/api/api";
+import { useAppSelector } from "../../../core/store/hooks";
 
 interface Group {
   id: number;
@@ -32,8 +41,12 @@ export const Groups = () => {
   const [editOpened, editModal] = useDisclosure(false);
   const [viewOpened, viewModal] = useDisclosure(false);
   const [deleteOpened, deleteModal] = useDisclosure(false);
-  const [newGroup, setNewGroup] = useState({ name: '', description: '' });
-  const [editGroup, setEditGroup] = useState({ id: 0, name: '', description: '' });
+  const [newGroup, setNewGroup] = useState({ name: "", description: "" });
+  const [editGroup, setEditGroup] = useState({
+    id: 0,
+    name: "",
+    description: "",
+  });
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groupTasks, setGroupTasks] = useState<Task[]>([]);
   const [groupUsers, setGroupUsers] = useState<User[]>([]);
@@ -44,8 +57,8 @@ export const Groups = () => {
       try {
         const response = await api.get(`/groups?user_id=${user?.id}`);
         setGroups(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Не удалось загрузить группы');
+      } catch (err: { response: { data: { message: string } } }) {
+        setError(err.response?.data?.message || "Не удалось загрузить группы");
       }
     };
     fetchGroups();
@@ -53,22 +66,22 @@ export const Groups = () => {
 
   const handleCreateGroup = async () => {
     if (!newGroup.name.trim()) {
-      setError('Название группы не может быть пустым');
+      setError("Название группы не может быть пустым");
       return;
     }
     try {
-      const response = await api.post('/groups', newGroup);
+      const response = await api.post("/groups", newGroup);
       setGroups([...groups, response.data]);
       createModal.close();
-      setNewGroup({ name: '', description: '' });
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось создать группу');
+      setNewGroup({ name: "", description: "" });
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось создать группу");
     }
   };
 
   const handleEditGroup = async () => {
     if (!editGroup.name.trim()) {
-      setError('Название группы не может быть пустым');
+      setError("Название группы не может быть пустым");
       return;
     }
     try {
@@ -78,8 +91,8 @@ export const Groups = () => {
       });
       setGroups(groups.map((g) => (g.id === editGroup.id ? response.data : g)));
       editModal.close();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось обновить группу');
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось обновить группу");
     }
   };
 
@@ -90,8 +103,8 @@ export const Groups = () => {
       setGroups(groups.filter((g) => g.id !== groupToDelete));
       deleteModal.close();
       setGroupToDelete(null);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось удалить группу');
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Не удалось удалить группу");
     }
   };
 
@@ -105,8 +118,10 @@ export const Groups = () => {
       setGroupTasks(tasksResponse.data);
       setGroupUsers(usersResponse.data);
       viewModal.open();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Не удалось загрузить данные группы');
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(
+        err.response?.data?.message || "Не удалось загрузить данные группы",
+      );
     }
   };
 
@@ -114,7 +129,10 @@ export const Groups = () => {
     <Table.Tr key={group.id}>
       <Table.Td>{group.id}</Table.Td>
       <Table.Td>
-        <Text style={{ cursor: 'pointer' }} onClick={() => handleViewGroup(group)}>
+        <Text
+          style={{ cursor: "pointer" }}
+          onClick={() => handleViewGroup(group)}
+        >
           {group.name}
         </Text>
       </Table.Td>
@@ -123,7 +141,11 @@ export const Groups = () => {
           variant="outline"
           size="xs"
           onClick={() => {
-            setEditGroup({ id: group.id, name: group.name, description: group.description });
+            setEditGroup({
+              id: group.id,
+              name: group.name,
+              description: group.description,
+            });
             editModal.open();
           }}
           mr="xs"
@@ -181,36 +203,52 @@ export const Groups = () => {
         </Table.Thead>
         <Table.Tbody>{groupRows}</Table.Tbody>
       </Table>
-      <Modal opened={createOpened} onClose={createModal.close} title="Создать группу">
+      <Modal
+        opened={createOpened}
+        onClose={createModal.close}
+        title="Создать группу"
+      >
         <TextInput
           label="Название"
           value={newGroup.name}
-          onChange={(e) => setNewGroup({ ...newGroup, name: e.currentTarget.value })}
+          onChange={(e) =>
+            setNewGroup({ ...newGroup, name: e.currentTarget.value })
+          }
           required
-          error={newGroup.name.trim() ? null : 'Обязательное поле'}
+          error={newGroup.name.trim() ? null : "Обязательное поле"}
         />
         <Textarea
           label="Описание"
           value={newGroup.description}
-          onChange={(e) => setNewGroup({ ...newGroup, description: e.currentTarget.value })}
+          onChange={(e) =>
+            setNewGroup({ ...newGroup, description: e.currentTarget.value })
+          }
           mt="md"
         />
         <Button onClick={handleCreateGroup} mt="md" fullWidth>
           Сохранить
         </Button>
       </Modal>
-      <Modal opened={editOpened} onClose={editModal.close} title="Редактировать группу">
+      <Modal
+        opened={editOpened}
+        onClose={editModal.close}
+        title="Редактировать группу"
+      >
         <TextInput
           label="Название"
           value={editGroup.name}
-          onChange={(e) => setEditGroup({ ...editGroup, name: e.currentTarget.value })}
+          onChange={(e) =>
+            setEditGroup({ ...editGroup, name: e.currentTarget.value })
+          }
           required
-          error={editGroup.name.trim() ? null : 'Обязательное поле'}
+          error={editGroup.name.trim() ? null : "Обязательное поле"}
         />
         <Textarea
           label="Описание"
           value={editGroup.description}
-          onChange={(e) => setEditGroup({ ...editGroup, description: e.currentTarget.value })}
+          onChange={(e) =>
+            setEditGroup({ ...editGroup, description: e.currentTarget.value })
+          }
           mt="md"
         />
         <Button onClick={handleEditGroup} mt="md" fullWidth>
@@ -223,8 +261,12 @@ export const Groups = () => {
         title={`Группа: ${selectedGroup?.name}`}
         size="lg"
       >
-        <Text mt="md">Описание: {selectedGroup?.description || 'Нет описания'}</Text>
-        <Title order={3} mt="lg">Задачи группы</Title>
+        <Text mt="md">
+          Описание: {selectedGroup?.description || "Нет описания"}
+        </Text>
+        <Title order={3} mt="lg">
+          Задачи группы
+        </Title>
         {groupTasks.length > 0 ? (
           <Table mt="md">
             <Table.Thead>
@@ -240,7 +282,9 @@ export const Groups = () => {
         ) : (
           <Text mt="md">Нет задач в этой группе</Text>
         )}
-        <Title order={3} mt="lg">Участники группы</Title>
+        <Title order={3} mt="lg">
+          Участники группы
+        </Title>
         {groupUsers.length > 0 ? (
           <Table mt="md">
             <Table.Thead>
@@ -259,7 +303,9 @@ export const Groups = () => {
         onClose={deleteModal.close}
         title="Подтверждение удаления"
       >
-        <Text>Вы уверены, что хотите удалить группу? Это действие нельзя отменить.</Text>
+        <Text>
+          Вы уверены, что хотите удалить группу? Это действие нельзя отменить.
+        </Text>
         <Button color="red" onClick={handleDeleteGroup} mt="md" fullWidth>
           Удалить
         </Button>

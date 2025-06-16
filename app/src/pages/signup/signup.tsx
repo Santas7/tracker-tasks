@@ -1,28 +1,35 @@
-import { Button, Paper, PasswordInput, TextInput, Title, Notification } from '@mantine/core';
-import { useState } from 'react';
-import api from '../../core/api/api';
-import classes from './signup.module.css';
-import { useNavigate } from 'react-router';
+import {
+  Button,
+  Paper,
+  PasswordInput,
+  TextInput,
+  Title,
+  Notification,
+} from "@mantine/core";
+import { useState } from "react";
+import api from "../../core/api/api";
+import classes from "./signup.module.css";
+import { useNavigate } from "react-router";
 
 export const SignUp = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (password !== confirmPassword) {
-      setError('Пароли не совпадают');
+      setError("Пароли не совпадают");
       return;
     }
 
     try {
-      await api.post('/register', { username, email, password });
-      navigate('/'); 
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Ошибка при регистрации');
+      await api.post("/register", { username, email, password });
+      navigate("/");
+    } catch (err: { response: { data: { message: string } } }) {
+      setError(err.response?.data?.message || "Ошибка при регистрации");
     }
   };
 
@@ -32,7 +39,15 @@ export const SignUp = () => {
         <Title order={2} className={classes.title}>
           Новый аккаунт
         </Title>
-        {error && <Notification color="red" title="Ошибка" onClose={() => setError(null)}>{error}</Notification>}
+        {error && (
+          <Notification
+            color="red"
+            title="Ошибка"
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Notification>
+        )}
         <TextInput
           className={classes.inputData}
           label="Имя пользователя"
