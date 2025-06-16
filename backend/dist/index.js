@@ -113,23 +113,18 @@ app.get('/api/tasks', authenticateJWT, async (req, res) => {
     }
 });
 app.post('/api/tasks', authenticateJWT, async (req, res) => {
-    let { title, description, skills, group_id, dt_start, dt_end, priority, status, user_ids } = req.body;
-    const m = {
-        'Низкий': 'low',
-        'Средний': 'medium',
-        'Высокий': 'high'
-    };
-    const s = {
-        'Новая': 'new',
-        'В работе': 'in_progress',
-        'Завершена': 'completed'
-    };
-    priority = m[priority];
-    status = s[status];
+    const { title, description, skills, group_id, dt_start, dt_end, priority, status, user_ids } = req.body;
+    const validPriorities = ['low', 'medium', 'high', null];
+    const validStatuses = ['new', 'in_progress', 'completed', null];
+    if (priority && !validPriorities.includes(priority)) {
+        return res.status(400).json({ message: 'Invalid priority value' });
+    }
+    if (status && !validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
     try {
-        const skillsArray = skills ? skills.split(',').map((s) => s.trim()).filter((s) => s) : null;
-        const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
-        const result = await db_config_1.pool.query('INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status]);
+        const skillsValue = skills ? `{${skills.join(',')}}` : null;
+        const result = await db_config_1.pool.query('INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [title, description, skillsValue, group_id || null, dt_start || null, dt_end || null, priority || null, status || null]);
         const task = result.rows[0];
         const userIds = Array.isArray(user_ids) ? user_ids : [req.user?.id];
         for (const user_id of userIds) {
@@ -145,23 +140,18 @@ app.post('/api/tasks', authenticateJWT, async (req, res) => {
 });
 app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
     const { id } = req.params;
-    let { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
-    const m = {
-        'Низкий': 'low',
-        'Средний': 'medium',
-        'Высокий': 'high'
-    };
-    const s = {
-        'Новая': 'new',
-        'В работе': 'in_progress',
-        'Завершена': 'completed'
-    };
-    priority = m[priority];
-    status = s[status];
+    const { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
+    const validPriorities = ['low', 'medium', 'high', null];
+    const validStatuses = ['new', 'in_progress', 'completed', null];
+    if (priority && !validPriorities.includes(priority)) {
+        return res.status(400).json({ message: 'Invalid priority value' });
+    }
+    if (status && !validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
     try {
-        const skillsArray = skills ? skills.split(',').map((s) => s.trim()).filter((s) => s) : null;
-        const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
-        const result = await db_config_1.pool.query('UPDATE tasks SET title = $1, description = $2, skills = $3, group_id = $4, dt_start = $5, dt_end = $6, priority = $7, status = $8 WHERE id = $9 RETURNING *', [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status, id]);
+        const skillsValue = skills ? `{${skills.join(',')}}` : null;
+        const result = await db_config_1.pool.query('UPDATE tasks SET title = $1, description = $2, skills = $3, group_id = $4, dt_start = $5, dt_end = $6, priority = $7, status = $8 WHERE id = $9 RETURNING *', [title, description, skillsValue, group_id || null, dt_start || null, dt_end || null, priority || null, status || null, id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Task not found' });
         }
@@ -175,17 +165,13 @@ app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
 });
 app.put('/api/tasks/:id/status', authenticateJWT, async (req, res) => {
     const { id } = req.params;
-    let { status } = req.body;
-    // const validStatuses = ['Новая', 'В работе', 'Завершена'];
-    const s = {
-        'Новая': 'new',
-        'В работе': 'in_progress',
-        'Завершена': 'completed'
-    };
-    //@ts-ignore
-    status = s[status];
+    const { status } = req.body;
+    const validStatuses = ['new', 'in_progress', 'completed', null];
+    if (status && !validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
     try {
-        const result = await db_config_1.pool.query('UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
+        const result = await db_config_1.pool.query('UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', [status || null, id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Task not found' });
         }
