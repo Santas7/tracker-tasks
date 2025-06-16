@@ -115,3 +115,108 @@
 {"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:36:36.765Z"}
 {"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:36:37.271Z"}
 {"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:36:37.274Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T11:46:02.916Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T11:48:09.291Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T11:48:09.320Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:48:15.935Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:48:19.664Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T11:48:47.033Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:49:04.720Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:50:11.525Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:52:17.556Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:56:48.290Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:56:56.075Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:56:56.091Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:56:56.875Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:57:19.311Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:57:32.314Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T12:00:47.036Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T12:00:47.059Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:01:25.505Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:01:27.657Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:01:28.963Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:01:28.976Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:04:32.691Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:04:32.694Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:04:36.501Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:05:05.675Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:05:17.834Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:05:19.498Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:05:31.902Z"}
+{"level":"info","message":"Fetched tasks for user_id: 1","timestamp":"2025-06-16T12:07:48.399Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:07:48.439Z"}
+{"level":"info","message":"Fetched tasks for user_id: 1","timestamp":"2025-06-16T12:08:17.281Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:08:17.290Z"}
+{"level":"info","message":"Fetched tasks for user_id: 1","timestamp":"2025-06-16T12:10:52.338Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:10:52.344Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:11:19.986Z"}
+{"level":"info","message":"Fetched tasks for user_id: 1","timestamp":"2025-06-16T12:11:20.588Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:11:20.594Z"}
+{"level":"info","message":"Fetched tasks for user_id: 1","timestamp":"2025-06-16T12:16:59.417Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:16:59.462Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:17:19.804Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:17:24.114Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:17:24.493Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:19:39.234Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:20:30.240Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:22:01.254Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:22:06.215Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T12:28:27.021Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T12:28:27.050Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:33:43.591Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T12:34:34.297Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:34:34.516Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:34:43.267Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:34:52.163Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:34:54.330Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:34:55.356Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:34:57.876Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:37:33.236Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:37:39.538Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:37:40.865Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:37:41.824Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T12:39:29.549Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T12:39:29.596Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T12:39:31.255Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T12:39:42.355Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T12:41:51.257Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T12:41:59.712Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T12:41:59.740Z"}
+{"level":"info","message":"Task created by user: andrei","timestamp":"2025-06-16T12:42:01.143Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:43:31.414Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:46:09.333Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T12:47:30.122Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:47:30.193Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:47:57.971Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:47:59.254Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T12:47:59.262Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:48:04.873Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:48:06.238Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:48:06.241Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:48:08.941Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:51:58.210Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:51:58.926Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:51:58.936Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:51:59.555Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:51:59.909Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:52:00.270Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:00.868Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:52:01.253Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:01.542Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:52:01.543Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T12:52:09.581Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:09.671Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T12:52:46.522Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:46.581Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:52:48.818Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:49.785Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:52:51.519Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:52.414Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:52:53.690Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:54.184Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:52:54.194Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T12:52:55.347Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:56.525Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T12:52:58.186Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T12:52:58.187Z"}
+{"level":"info","message":"Fetched tasks for user_id: all","timestamp":"2025-06-16T13:05:54.177Z"}

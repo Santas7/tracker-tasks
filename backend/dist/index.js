@@ -13,7 +13,7 @@ const db_1 = require("./core/db/db");
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: '*',
+    origin: 'http://localhost:5173',
     credentials: true,
 }));
 app.use(express_1.default.json());
@@ -87,7 +87,7 @@ app.get('/api/profile', authenticateJWT, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-app.get('/api/tasks', async (req, res) => {
+app.get('/api/tasks', authenticateJWT, async (req, res) => {
     const { user_id, group_id } = req.query;
     try {
         let query = 'SELECT * FROM tasks';
@@ -104,7 +104,7 @@ app.get('/api/tasks', async (req, res) => {
             }
         }
         const result = await db_config_1.pool.query(query, params);
-        logger_1.logger.info('Fetched tasks');
+        logger_1.logger.info(`Fetched tasks for user_id: ${user_id || 'all'}`);
         res.json(result.rows);
     }
     catch (err) {
@@ -113,10 +113,23 @@ app.get('/api/tasks', async (req, res) => {
     }
 });
 app.post('/api/tasks', authenticateJWT, async (req, res) => {
-    const { title, description, skills, group_id, dt_start, dt_end, priority, user_ids } = req.body;
+    let { title, description, skills, group_id, dt_start, dt_end, priority, status, user_ids } = req.body;
+    const m = {
+        'Низкий': 'low',
+        'Средний': 'medium',
+        'Высокий': 'high'
+    };
+    const s = {
+        'Новая': 'new',
+        'В работе': 'in_progress',
+        'Завершена': 'completed'
+    };
+    priority = m[priority];
+    status = s[status];
     try {
-        const skillsArray = skills ? skills.split(',').map((s) => s.trim()).filter((s) => s) : [];
-        const result = await db_config_1.pool.query('INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [title, description, `{${skillsArray.join(',')}}`, group_id, dt_start, dt_end, priority, 'new']);
+        const skillsArray = skills ? skills.split(',').map((s) => s.trim()).filter((s) => s) : null;
+        const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
+        const result = await db_config_1.pool.query('INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status]);
         const task = result.rows[0];
         const userIds = Array.isArray(user_ids) ? user_ids : [req.user?.id];
         for (const user_id of userIds) {
@@ -130,21 +143,65 @@ app.post('/api/tasks', authenticateJWT, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+app.put('/api/tasks/:id', authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    const { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
+    const validPriorities = ['Низкий', 'Средний', 'Высокий'];
+    const validStatuses = ['Новая', 'В работе', 'Завершена'];
+    if (!validPriorities.includes(priority)) {
+        return res.status(400).json({ message: 'Invalid priority value' });
+    }
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
+    try {
+        const skillsArray = skills ? skills.split(',').map((s) => s.trim()).filter((s) => s) : null;
+        const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
+        const result = await db_config_1.pool.query('UPDATE tasks SET title = $1, description = $2, skills = $3, group_id = $4, dt_start = $5, dt_end = $6, priority = $7, status = $8 WHERE id = $9 RETURNING *', [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status, id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        logger_1.logger.info(`Task ${id} updated by user: ${req.user?.username}`);
+        res.json(result.rows[0]);
+    }
+    catch (err) {
+        logger_1.logger.error(`Error updating task: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+});
 app.put('/api/tasks/:id/status', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
+    const validStatuses = ['Новая', 'В работе', 'Завершена'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
     try {
         const result = await db_config_1.pool.query('UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
-        if (result.rows.length > 0) {
-            logger_1.logger.info(`Task ${id} status updated by user: ${req.user?.username}`);
-            res.json(result.rows[0]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Task not found' });
         }
-        else {
-            res.status(404).json({ message: 'Task not found' });
-        }
+        logger_1.logger.info(`Task ${id} status updated to ${status}`);
+        res.json(result.rows[0]);
     }
     catch (err) {
         logger_1.logger.error(`Error updating task status: ${err.message}`);
+        res.status(500).send('Server error');
+    }
+});
+app.delete('/api/tasks/:id', authenticateJWT, async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db_config_1.pool.query('DELETE FROM task_users WHERE task_id = $1', [id]);
+        const result = await db_config_1.pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        logger_1.logger.info(`Task ${id} deleted by user: ${req.user?.username}`);
+        res.status(204).send();
+    }
+    catch (err) {
+        logger_1.logger.error(`Error deleting task: ${err.message}`);
         res.status(500).send('Server error');
     }
 });
@@ -226,7 +283,6 @@ app.delete('/api/groups/:id', authenticateJWT, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(config_1.config.server.port, () => {
     logger_1.logger.info(`Server running on port ${config_1.config.server.port}`);
 });

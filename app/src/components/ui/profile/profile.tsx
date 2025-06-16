@@ -36,6 +36,7 @@ export const Profile = () => {
       )}
       {profile && (
         <>
+          <Text mt="md">ID пользователя: {profile.id}</Text>
           <Text mt="md">Имя пользователя: {profile.username}</Text>
           <Text mt="sm">Email: {profile.email}</Text>
         </>

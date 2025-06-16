@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconLogout } from '@tabler/icons-react';
 import { Code, Group } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
-import { NavLink } from 'react-router';
+import { NavLink, useLocation } from 'react-router';
 import classes from './sidebar.module.css';
 import { data } from '../../../core/utils/sidebar/data';
-import { useAppDispatch, useAppSelector } from '../../../core/store/hooks';
+import { useAppDispatch } from '../../../core/store/hooks';
 import { useNavigate } from 'react-router';
 import { logout } from '../../../core/store/slices/auth-slice';
 
 export const Sidebar = () => {
-  const [active, setActive] = useState('Задачи');
+  const location = useLocation();
+  const [active, setActive] = useState('Главная');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    const currentItem = data.find((item) => item.link === location.pathname);
+    setActive(currentItem ? currentItem.label : 'Главная'); 
+  }, [location.pathname]);
 
   const links = data.map((item) => (
     <NavLink
@@ -21,6 +26,7 @@ export const Sidebar = () => {
       className={({ isActive }) => `${classes.link} ${isActive ? classes.active : ''}`}
       key={item.label}
       onClick={() => setActive(item.label)}
+      data-active={item.label === active || undefined}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
@@ -39,9 +45,7 @@ export const Sidebar = () => {
           <MantineLogo size={28} />
           <Code fw={700}>v1.0</Code>
         </Group>
-        <Group mt="md">
-          <span>Добро пожаловать, {user?.username}</span>
-        </Group>
+        
         {links}
       </div>
       <div className={classes.footer}>

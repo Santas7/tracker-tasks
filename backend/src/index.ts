@@ -12,12 +12,11 @@ import cors from 'cors';
 const app: Express = express();
 
 app.use(cors({
-  origin: '*', 
+  origin: 'http://localhost:5173', 
   credentials: true, 
 }));
 
 app.use(express.json());
-
 
 app.use(session({
   store: new PgSession({
@@ -96,7 +95,7 @@ app.get('/api/profile', authenticateJWT, async (req: Request, res: Response) => 
   }
 });
 
-app.get('/api/tasks', async (req: Request, res: Response) => {
+app.get('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
   const { user_id, group_id } = req.query;
   try {
     let query = 'SELECT * FROM tasks';
@@ -113,7 +112,7 @@ app.get('/api/tasks', async (req: Request, res: Response) => {
       }
     }
     const result = await pool.query(query, params);
-    logger.info('Fetched tasks');
+    logger.info(`Fetched tasks for user_id: ${user_id || 'all'}`);
     res.json(result.rows);
   } catch (err: any) {
     logger.error(`Error fetching tasks: ${err.message}`);
@@ -122,12 +121,25 @@ app.get('/api/tasks', async (req: Request, res: Response) => {
 });
 
 app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
-  const { title, description, skills, group_id, dt_start, dt_end, priority, user_ids } = req.body;
+  let { title, description, skills, group_id, dt_start, dt_end, priority, status, user_ids } = req.body;
+  const m = {
+    'Низкий': 'low',
+    'Средний': 'medium',
+    'Высокий': 'high'
+  }
+  const s = {
+    'Новая': 'new',
+    'В работе': 'in_progress',
+    'Завершена': 'completed'
+  }
+  priority = m[priority];
+  status = s[status];
   try {
-    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : [];
+    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : null;
+    const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
     const result = await pool.query(
       'INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [title, description, `{${skillsArray.join(',')}}`, group_id, dt_start, dt_end, priority, 'new']
+      [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status]
     );
     const task = result.rows[0];
     const userIds = Array.isArray(user_ids) ? user_ids : [req.user?.id];
@@ -142,22 +154,70 @@ app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
   }
 });
 
+app.put('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { title, description, skills, group_id, dt_start, dt_end, priority, status } = req.body;
+  const validPriorities = ['Низкий', 'Средний', 'Высокий'];
+  const validStatuses = ['Новая', 'В работе', 'Завершена'];
+  if (!validPriorities.includes(priority)) {
+    return res.status(400).json({ message: 'Invalid priority value' });
+  }
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
+  try {
+    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : null;
+    const skillsValue = skillsArray ? `{${skillsArray.join(',')}}` : null;
+    const result = await pool.query(
+      'UPDATE tasks SET title = $1, description = $2, skills = $3, group_id = $4, dt_start = $5, dt_end = $6, priority = $7, status = $8 WHERE id = $9 RETURNING *',
+      [title, description, skillsValue, group_id, dt_start || null, dt_end || null, priority, status, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    logger.info(`Task ${id} updated by user: ${req.user?.username}`);
+    res.json(result.rows[0]);
+  } catch (err: any) {
+    logger.error(`Error updating task: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
 app.put('/api/tasks/:id/status', authenticateJWT, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
+  const validStatuses = ['Новая', 'В работе', 'Завершена'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
   try {
     const result = await pool.query(
       'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *',
       [status, id]
     );
-    if (result.rows.length > 0) {
-      logger.info(`Task ${id} status updated by user: ${req.user?.username}`);
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).json({ message: 'Task not found' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
     }
+    logger.info(`Task ${id} status updated to ${status}`);
+    res.json(result.rows[0]);
   } catch (err: any) {
     logger.error(`Error updating task status: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/api/tasks/:id', authenticateJWT, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM task_users WHERE task_id = $1', [id]);
+    const result = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    logger.info(`Task ${id} deleted by user: ${req.user?.username}`);
+    res.status(204).send();
+  } catch (err: any) {
+    logger.error(`Error deleting task: ${err.message}`);
     res.status(500).send('Server error');
   }
 });
@@ -245,9 +305,6 @@ app.delete('/api/groups/:id', authenticateJWT, async (req: Request, res: Respons
     res.status(500).send('Server error');
   }
 });
-
-
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(config.server.port, () => {
   logger.info(`Server running on port ${config.server.port}`);

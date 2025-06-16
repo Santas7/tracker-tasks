@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Title, Table, Notification, Button, Modal, TextInput, Select } from '@mantine/core';
+import { Title, Card, Text, Button, Modal, TextInput, Select, Group, Grid, ActionIcon, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconPencil, IconTrash } from '@tabler/icons-react';
 import api from '../../../core/api/api';
-import { useAppSelector } from '../../../core/store/hooks';
+import { ModalCreateTask } from './modals-task/modal-create-task/modal-create-task';
+import { ModalEditTask } from './modals-task/modal-edit-task/modal-edit.task';
+import { PlotTasks } from './plot-tasks/plot-tasks';
+import { ModalsTask } from './modals-task/modals-task';
 
 interface Task {
   id: number;
   title: string;
   description: string;
-  skills: string[];
+  skills: string[] | null;
   group_id: number;
   dt_start: string;
   dt_end: string;
@@ -16,29 +20,11 @@ interface Task {
   status: string;
 }
 
-interface User {
-  id: number;
-  username: string;
-}
-
-const priorityMap: { [key: string]: string } = {
-  Низкий: 'low',
-  Средний: 'medium',
-  Высокий: 'high',
-};
-
-const priorityOptions = [
-  { value: 'low', label: 'Низкий' },
-  { value: 'medium', label: 'Средний' },
-  { value: 'high', label: 'Высокий' },
-];
-
 export const Tasks = () => {
-  const user = useAppSelector((state) => state.auth.user);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -47,44 +33,48 @@ export const Tasks = () => {
     dt_start: '',
     dt_end: '',
     priority: '',
-    user_ids: [] as number[],
+    status: 'new'
   });
+  const [editTask, setEditTask] = useState<Task | null>(null);
+
+  const statusOptions = [
+    { value: 'new', label: 'Новая' },
+    { value: 'in_progress', label: 'В работе' },
+    { value: 'completed', label: 'Завершена' },
+  ];
+
+  const columns = {
+    'Новая': tasks.filter(t => t.status === 'new'),
+    'В работе': tasks.filter(t => t.status === 'in_progress'),
+    'Завершена': tasks.filter(t => t.status === 'completed'),
+  };
+
+  const priorityOptions = [
+    { value: 'low', label: 'Низкий' },
+    { value: 'medium', label: 'Средний' },
+    { value: 'high', label: 'Высокий' },
+  ];
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTasks = async () => {
       try {
-        const [tasksResponse, usersResponse] = await Promise.all([
-          api.get(`/tasks?user_id=${user?.id}`),
-          api.get('/users'),
-        ]);
-        setTasks(tasksResponse.data.map((task: Task) => ({
-          ...task,
-          priority: Object.keys(priorityMap).find(key => priorityMap[key] === task.priority) || task.priority,
-        })));
-        setUsers(usersResponse.data);
+        const response = await api.get('/tasks');
+        setTasks(response.data);
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Не удалось загрузить данные');
+        setError(err.response?.data?.message || 'Не удалось загрузить задачи');
       }
     };
-    fetchData();
-  }, [user?.id]);
+    fetchTasks();
+  }, []);
 
   const handleCreateTask = async () => {
-    if (!newTask.title.trim() || !newTask.group_id || !newTask.priority) {
-      setError('Заполните обязательные поля: Название, ID группы, Приоритет');
-      return;
-    }
     try {
       const response = await api.post('/tasks', {
         ...newTask,
         group_id: parseInt(newTask.group_id),
-        priority: priorityMap[newTask.priority],
-        user_ids: [...newTask.user_ids, user?.id].filter(Boolean),
+        skills: newTask.skills ? newTask.skills.split(',').map(s => s.trim()) : null,
       });
-      setTasks([...tasks, {
-        ...response.data,
-        priority: Object.keys(priorityMap).find(key => priorityMap[key] === response.data.priority) || response.data.priority,
-      }]);
+      setTasks([...tasks, response.data]);
       close();
       setNewTask({
         title: '',
@@ -94,113 +84,79 @@ export const Tasks = () => {
         dt_start: '',
         dt_end: '',
         priority: '',
-        user_ids: [],
+        status: 'new'
       });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Не удалось создать задачу');
     }
   };
 
-  const taskRows = tasks.map((task) => (
-    <Table.Tr key={task.id}>
-      <Table.Td>{task.title}</Table.Td>
-      <Table.Td>{task.description}</Table.Td>
-      <Table.Td>{task.skills.join(', ')}</Table.Td>
-      <Table.Td>{task.status}</Table.Td>
-      <Table.Td>{task.priority}</Table.Td>
-    </Table.Tr>
-  ));
+  const handleEditTask = async () => {
+    if (!editTask) return;
+    try {
+      const response = await api.put(`/tasks/${editTask.id}`, {
+        ...editTask,
+        group_id: parseInt(String(editTask.group_id)),
+        skills: editTask.skills ? editTask.skills.join(',') : null,
+      });
+      setTasks(tasks.map(t => t.id === editTask.id ? response.data : t));
+      closeEdit();
+      setEditTask(null);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Не удалось обновить задачу');
+    }
+  };
 
-  const userOptions = users.map((u) => ({ value: u.id.toString(), label: u.username }));
+  const handleStatusChange = async (taskId: number, newStatus: string) => {
+    try {
+      const response = await api.put(`/tasks/${taskId}/status`, { status: newStatus });
+      setTasks(tasks.map(t => t.id === taskId ? response.data : t));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Не удалось обновить статус');
+    }
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      setTasks(tasks.filter(t => t.id !== taskId));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Не удалось удалить задачу');
+    }
+  };
+
+  
 
   return (
     <div>
-      <Title order={2}>Мои задачи</Title>
+      <Title order={2}>Задачи</Title>
       {error && (
         <Notification color="red" title="Ошибка" onClose={() => setError(null)}>
           {error}
         </Notification>
       )}
-      <Button onClick={open} mt="md">
-        Создать задачу
-      </Button>
-      <Table mt="md">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Название</Table.Th>
-            <Table.Th>Описание</Table.Th>
-            <Table.Th>Навыки</Table.Th>
-            <Table.Th>Статус</Table.Th>
-            <Table.Th>Приоритет</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{taskRows}</Table.Tbody>
-      </Table>
-      <Modal opened={opened} onClose={close} title="Создать задачу">
-        <TextInput
-          label="Название"
-          value={newTask.title}
-          onChange={(e) => setNewTask({ ...newTask, title: e.currentTarget.value })}
-          required
-          error={newTask.title.trim() ? null : 'Обязательное поле'}
-        />
-        <TextInput
-          label="Описание"
-          value={newTask.description}
-          onChange={(e) => setNewTask({ ...newTask, description: e.currentTarget.value })}
-          mt="md"
-        />
-        <TextInput
-          label="Навыки (через запятую)"
-          value={newTask.skills}
-          onChange={(e) => setNewTask({ ...newTask, skills: e.currentTarget.value })}
-          mt="md"
-          placeholder="навык1, навык2"
-        />
-        <TextInput
-          label="ID группы"
-          value={newTask.group_id}
-          onChange={(e) => setNewTask({ ...newTask, group_id: e.currentTarget.value })}
-          mt="md"
-          type="number"
-          required
-          error={newTask.group_id ? null : 'Обязательное поле'}
-        />
-        <TextInput
-          label="Дата начала"
-          value={newTask.dt_start}
-          onChange={(e) => setNewTask({ ...newTask, dt_start: e.currentTarget.value })}
-          mt="md"
-          type="datetime-local"
-        />
-        <TextInput
-          label="Дата окончания"
-          value={newTask.dt_end}
-          onChange={(e) => setNewTask({ ...newTask, dt_end: e.currentTarget.value })}
-          mt="md"
-          type="datetime-local"
-        />
-        <Select
-          label="Приоритет"
-          value={newTask.priority}
-          onChange={(value) => setNewTask({ ...newTask, priority: value || '' })}
-          data={priorityOptions}
-          mt="md"
-          required
-          error={newTask.priority ? null : 'Обязательное поле'}
-        />
-        <Select
-          label="Назначить пользователей"
-          value={newTask.user_ids.map(String)}
-          onChange={(values) => setNewTask({ ...newTask, user_ids: values.map(Number) })}
-          data={userOptions}
-          mt="md"
-          multiple
-        />
-        <Button onClick={handleCreateTask} mt="md" fullWidth>
-          Сохранить
-        </Button>
-      </Modal>
+      <Button onClick={open} mt="md">Создать задачу</Button>
+      
+      <PlotTasks columns={columns} 
+        statusOptions={statusOptions} 
+        priorityOptions={priorityOptions} 
+        handleStatusChange={handleStatusChange} 
+        handleDeleteTask={handleDeleteTask} 
+        openEdit={openEdit} 
+        editTask={editTask} 
+        setEditTask={setEditTask} 
+      />
+      <ModalsTask opened={opened}
+        close={close}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        handleCreateTask={handleCreateTask}
+        editOpened={editOpened}
+        closeEdit={closeEdit}
+        editTask={editTask}
+        setEditTask={setEditTask}
+        handleEditTask={handleEditTask}
+      />
     </div>
   );
 };
