@@ -7,8 +7,15 @@ import { logger } from './core/logger/logger';
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
 import { PgSession } from './core/db/db';
+import cors from 'cors';
 
 const app: Express = express();
+
+app.use(cors({
+  origin: '*', 
+  credentials: true, 
+}));
+
 app.use(express.json());
 
 
