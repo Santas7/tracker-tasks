@@ -65,3 +65,53 @@
 {"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:27:25.499Z"}
 {"level":"info","message":"Fetched all tasks","timestamp":"2025-06-16T11:27:29.431Z"}
 {"level":"error","message":"Error creating task: malformed array literal: \"\"","timestamp":"2025-06-16T11:27:57.864Z"}
+{"level":"info","message":"Server running on port 5003","timestamp":"2025-06-16T11:31:54.400Z"}
+{"level":"info","message":"Connected to PostgreSQL database","timestamp":"2025-06-16T11:31:54.443Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T11:31:57.020Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T11:32:00.598Z"}
+{"level":"error","message":"Error creating task: new row for relation \"tasks\" violates check constraint \"tasks_priority_check\"","timestamp":"2025-06-16T11:32:03.456Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:33:54.912Z"}
+{"level":"error","message":"Error fetching tasks: invalid input syntax for type integer: \"undefined\"","timestamp":"2025-06-16T11:33:54.950Z"}
+{"level":"info","message":"Task created by user: andrei","timestamp":"2025-06-16T11:34:15.658Z"}
+{"level":"info","message":"Task created by user: andrei","timestamp":"2025-06-16T11:34:33.852Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:34:38.408Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:34:39.881Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:34:39.889Z"}
+{"level":"error","message":"Error fetching tasks: invalid input syntax for type integer: \"undefined\"","timestamp":"2025-06-16T11:34:43.266Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:34:43.270Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:34:45.836Z"}
+{"level":"error","message":"Error fetching tasks: invalid input syntax for type integer: \"undefined\"","timestamp":"2025-06-16T11:34:46.213Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:34:46.224Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:34:59.766Z"}
+{"level":"error","message":"Error fetching tasks: invalid input syntax for type integer: \"undefined\"","timestamp":"2025-06-16T11:35:01.731Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:01.742Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:35:09.614Z"}
+{"level":"error","message":"Error fetching tasks: invalid input syntax for type integer: \"undefined\"","timestamp":"2025-06-16T11:35:10.936Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:10.945Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:35:23.039Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:35:26.043Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:35:26.052Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:35:31.720Z"}
+{"level":"info","message":"User logged in: andrei","timestamp":"2025-06-16T11:35:42.177Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:42.229Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:35:42.231Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:35:46.371Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:35:46.756Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:46.757Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:35:47.380Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:35:48.018Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:48.019Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:35:51.047Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:35:51.049Z"}
+{"level":"info","message":"Task created by user: andrei","timestamp":"2025-06-16T11:36:28.856Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:36:29.824Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:36:30.384Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:36:30.392Z"}
+{"level":"info","message":"Fetched all groups","timestamp":"2025-06-16T11:36:32.374Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:36:33.472Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:36:33.473Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:36:36.277Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:36:36.278Z"}
+{"level":"info","message":"Profile fetched for user: andrei","timestamp":"2025-06-16T11:36:36.765Z"}
+{"level":"info","message":"Fetched tasks","timestamp":"2025-06-16T11:36:37.271Z"}
+{"level":"info","message":"Fetched all users","timestamp":"2025-06-16T11:36:37.274Z"}

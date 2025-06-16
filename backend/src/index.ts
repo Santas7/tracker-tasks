@@ -96,16 +96,46 @@ app.get('/api/profile', authenticateJWT, async (req: Request, res: Response) => 
   }
 });
 
-app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
-  const { title, description, skills, group_id, dt_start, dt_end, priority } = req.body;
+app.get('/api/tasks', async (req: Request, res: Response) => {
+  const { user_id, group_id } = req.query;
   try {
+    let query = 'SELECT * FROM tasks';
+    const params: any[] = [];
+    if (user_id || group_id) {
+      query += ' WHERE';
+      if (user_id) {
+        query += ' EXISTS (SELECT 1 FROM task_users WHERE task_id = tasks.id AND user_id = $1)';
+        params.push(user_id);
+      }
+      if (group_id) {
+        query += user_id ? ' AND group_id = $2' : ' group_id = $1';
+        params.push(group_id);
+      }
+    }
+    const result = await pool.query(query, params);
+    logger.info('Fetched tasks');
+    res.json(result.rows);
+  } catch (err: any) {
+    logger.error(`Error fetching tasks: ${err.message}`);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/api/tasks', authenticateJWT, async (req: Request, res: Response) => {
+  const { title, description, skills, group_id, dt_start, dt_end, priority, user_ids } = req.body;
+  try {
+    const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter((s: string) => s) : [];
     const result = await pool.query(
-      'INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [title, description, skills, group_id, dt_start, dt_end, priority]
+      'INSERT INTO tasks (title, description, skills, group_id, dt_start, dt_end, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [title, description, `{${skillsArray.join(',')}}`, group_id, dt_start, dt_end, priority, 'new']
     );
-    //@ts-ignore
+    const task = result.rows[0];
+    const userIds = Array.isArray(user_ids) ? user_ids : [req.user?.id];
+    for (const user_id of userIds) {
+      await pool.query('INSERT INTO task_users (task_id, user_id) VALUES ($1, $2)', [task.id, user_id]);
+    }
     logger.info(`Task created by user: ${req.user?.username}`);
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(task);
   } catch (err: any) {
     logger.error(`Error creating task: ${err.message}`);
     res.status(500).send('Server error');
@@ -121,7 +151,6 @@ app.put('/api/tasks/:id/status', authenticateJWT, async (req: Request, res: Resp
       [status, id]
     );
     if (result.rows.length > 0) {
-      //@ts-ignore
       logger.info(`Task ${id} status updated by user: ${req.user?.username}`);
       res.json(result.rows[0]);
     } else {
@@ -129,17 +158,6 @@ app.put('/api/tasks/:id/status', authenticateJWT, async (req: Request, res: Resp
     }
   } catch (err: any) {
     logger.error(`Error updating task status: ${err.message}`);
-    res.status(500).send('Server error');
-  }
-});
-
-app.get('/api/tasks', async (req: Request, res: Response) => {
-  try {
-    const result = await pool.query('SELECT * FROM tasks');
-    logger.info('Fetched all tasks');
-    res.json(result.rows);
-  } catch (err: any) {
-    logger.error(`Error fetching tasks: ${err.message}`);
     res.status(500).send('Server error');
   }
 });
